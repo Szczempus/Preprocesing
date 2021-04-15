@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 # -----------------------
 # private function
 # -----------------------
-def params_init(start, stop, num, step=None):
-    array = np.linspace(start=start, stop=stop, )
+def params_init( ):
+
     return params
 
 
@@ -39,7 +39,7 @@ wwb_P = 1
 # main function
 # -----------------------
 if __name__ == '__main__':
-    num, matrix = generujTabliceGeometrii(0, 4, 10)
+    num, matrix = genGeometricMatrix(0, 4, 10)
     print(f'liczba wezłów {num+1},\n\twartości {matrix}\n\t')
     # [parametry_sterujace] = params_init()
 
