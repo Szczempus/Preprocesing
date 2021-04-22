@@ -41,14 +41,14 @@ def params_init(x_0, x_P, wwb_L, wwb_P, twb_L, twb_P):
     :return: przedział, wartości brzegowe, typy
     """
 
-    section = np.array([x_0, x_P])
-    conditions = np.array([wwb_L, wwb_P])
-    types = np.array([twb_L, twb_P])
+    przedzial = np.array([x_0, x_P])
+    warunki_brzeg = np.array([wwb_L, wwb_P])
+    typy = np.array([twb_L, twb_P])
 
-    return section, conditions, types
+    return przedzial, warunki_brzeg, typy
 
 
-def geometry_definition(section, knots):
+def geometry_definition(przedzial, wezly):
     """
 
     section     =   przedział obszaru w formacie [lewa strona, prawa strona]
@@ -56,21 +56,22 @@ def geometry_definition(section, knots):
 
     Funkcja liczy długość przedziału, ilość węzłów, ilość elementów i długość jednego elementu)
 
-    :param section: numpy.ndarray
-    :param knots: vector
+    :param przedzial: numpy.ndarray
+    :param wezly: vector
     :return: długość przedziału, liczba węzłów, liczba elementów, długość elementów, węzły początkowe i końcowe elementów
     """
-    x = section[1] - section[0]
-    knots_num = len(knots)
+    x = przedzial[1] - przedzial[0]
+    knots_num = len(wezly)
     elem_num = knots_num - 1
     elem_length = x / elem_num
+    elem_length = np.around(elem_length, 1)
     elem_array = []
-    nodes = np.array([section[0]])
+    nodes = np.array([przedzial[0]])
 
     for i in range(knots_num - 1):
-        elem_array.append(np.array([knots[i], knots[i + 1]]))
+        elem_array.append(np.array([wezly[i], wezly[i + 1]]))
     for i in range(knots_num):
-        nodes = np.block([nodes, i * elem_length + section[0]])
+        nodes = np.block([nodes, i * elem_length + przedzial[0]])
 
     return x, knots_num, elem_num, elem_length, elem_array, nodes
 
@@ -119,6 +120,26 @@ def geometry_definition_auto(x_0, x_p, n):
     return
 
 
+def base_functions(i):
+    if i == 0:
+        f = lambda x: 0 * x + 1
+        df = lambda x: 0 * x
+    elif i == 1:
+        f = (lambda x: -1 / 2 * x + 1 / 2, lambda x: 0.5 * x + 0.5)
+        df = (lambda x: -1 / 2 + 0 * x, lambda x: 0.5)
+    # TODO elif i == 2:
+    #     f =
+    #     df =
+    else:
+        raise Exception("Bład w funkcji bazowych. ")
+    return f, df
+
+
+def Aij(dphi1, dphi2, c, phi1, phi2):
+    Aij = lambda x: -dphi1(x) * dphi2(x) + c * phi1(x) * phi2(x)
+    return Aij
+
+
 # def genGeometricMatrix(x_0, x_p, n):
 #     temp = (x_p - x_0) / (n - 1)
 #     matrix = np.array([x_0])
@@ -152,16 +173,31 @@ def geometry_definition_auto(x_0, x_p, n):
 # ----------------------------------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    control_param = control_params(c=0, f=0)
+    c = 0
+    f = lambda x: 0
+
+    control_param = control_params(c=f, f=f)
     print(f"Parametr sterujący c: {control_param[0]}\nParametr sterujący f: {control_param[1]}\n")
 
     params = params_init(x_0=-2, x_P=20, wwb_L=-1, wwb_P=5, twb_L="D", twb_P="N")
     print(params)
 
-    geometry = geometry_definition(section=params[0], knots=[1, 3, 4, 5, 6, 7, 8, 2])
+    geometry = geometry_definition(przedzial=params[0], wezly=[1, 3, 4, 5, 6, 7, 8, 2])
     print(geometry)
 
     geometry_plot(section=params[0], knots=geometry[5], types=params[2])
+
+    phi, dphi = base_functions(1)
+
+    # xx = np.linspace(-1, 1, 101)
+    # plt.plot(xx, phi[0](xx), 'r')
+    # plt.plot(xx, phi[1](xx), 'g')
+    # plt.plot(xx, dphi[0](xx), 'b')
+    # plt.plot(xx, dphi[1](xx), 'c')
+    # plt.show()
+    liczbaElementow = geometry[3]
+    for ee in np.arange(0, liczbaElementow):
+        elemIndRow = ee
 
 # ----------------------------------------------------------------------------------------------------------------------
 # end main function
