@@ -97,6 +97,11 @@ def geometry_plot(wezly: list, elementy: list, warunki_brzegowe: dict = None):
 
 
 def base_functions(i):
+    '''
+
+    :param i: stopień funkcji bazowych dla elementu (do wyboru 1 lub 2)
+    :return: funkcja bazowa i jej pochodna
+    '''
     if i == 0:
         f = lambda x: 0 * x + 1
         df = lambda x: 0 * x
@@ -105,25 +110,21 @@ def base_functions(i):
         df = (lambda x: -1 / 2 + 0 * x, lambda x: 0.5 + 0 * x)
 
     elif i == 2:
-        f = (lambda x: 2 * x**2 - 3 * x - 1, lambda x: 4 * x - 4 * x**2, lambda x: 2 * x**2 - x)
+        f = (lambda x: 2 * x ** 2 - 3 * x - 1, lambda x: 4 * x - 4 * x ** 2, lambda x: 2 * x ** 2 - x)
         df = (lambda x: 4 * x - 3, lambda x: -8 * x + 4, lambda x: 4 * x - 1)
     else:
         raise Exception("Bład w funkcji bazowych. ")
     return f, df
 
 
-def Aij(dphi1, dphi2, c, phi1, phi2):
+def Aij(c, dphi1, dphi2, phi1, phi2):
     '''
 
-    :param dphi1:
-    :param dphi2:
-    :param c:
-    :param phi1:
-    :param phi2:
-    :return: funkcje lambda będące funkcjami podcałkowymi A_ij
+    :param c: stała
+    :param phi, dphi: kolejne funkcje dphi lub phi
+    :return:
     '''
-    Aij = lambda x: -dphi1(x) * dphi2(x) + c * phi1(x) * phi2(x)
-    return Aij
+    return lambda x: -dphi1(x) * dphi2(x) + c * phi1(x) * phi2(x)
 
 
 def mem_allocation(n: int):

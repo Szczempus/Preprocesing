@@ -1,12 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import FemFunctions as ff
+import scipy.integrate as spint
 
 # ----------------------------------------------------------------------------------------------------------------------
 # private function
 # ----------------------------------------------------------------------------------------------------------------------
-
-
 
 
 # def genGeometricMatrix(x_0, x_p, n):
@@ -56,6 +55,43 @@ if __name__ == '__main__':
 
     [A, b] = ff.mem_allocation(n)
 
+    stopien_funkcji_baz = 1
+    phi, dphi = ff.base_functions(stopien_funkcji_baz)
+
+    # xx = np.linspace(-1, 1, 101)
+    # plt.plot(xx, phi[0](xx), 'r')
+    # plt.plot(xx, phi[1](xx), 'g')
+    # plt.plot(xx, phi[2](xx), 'b')
+    # plt.plot(xx, dphi[0](xx), 'c')
+    # plt.plot(xx, dphi[1](xx), 'm')
+    # plt.plot(xx, dphi[2](xx), 'y')
+    # plt.show()
+
+    for indeks_elementu in np.arange(0, np.shape(elementy)[0]):
+        indeks_globalny_pocz = elementy[indeks_elementu, 1]
+        indeks_globalny_konc = elementy[indeks_elementu, 2]
+        globalne_indeksy = np.array([indeks_globalny_pocz, indeks_globalny_konc])
+
+        x_a = wezly[indeks_globalny_pocz - 1, 1]
+        x_b = wezly[indeks_globalny_konc - 1, 1]
+
+        J = (x_b - x_a) / 2
+
+        M = np.zeros([stopien_funkcji_baz + 1, stopien_funkcji_baz + 1])
+
+        for n in range(stopien_funkcji_baz + 1):
+            for m in range(stopien_funkcji_baz + 1):
+                val = spint.quad(ff.Aij(c, dphi[n], dphi[m], phi[n], phi[m]), -1, 1)[0]
+                M[n, m] = J * val
+
+        A[np.ix_(globalne_indeksy - 1, globalne_indeksy - 1)] += M
+
+        if warunki_brzegowe[0]['typ'] == 'D':
+
+            indeks_wezla = warunki_brzegowe[0]['ind']
+            wartosc_war_brzeg = warunki_brzegowe[0]['wartosc']
+
+            # TODO
 
 # ----------------------------------------------------------------------------------------------------------------------
 # end main function
