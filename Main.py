@@ -55,7 +55,7 @@ if __name__ == '__main__':
 
     [A, b] = ff.mem_allocation(n)
 
-    stopien_funkcji_baz = 2
+    stopien_funkcji_baz = 1
     phi, dphi = ff.base_functions(stopien_funkcji_baz)
 
     # xx = np.linspace(-1, 1, 101)
@@ -90,7 +90,31 @@ if __name__ == '__main__':
             indeks_wezla = warunki_brzegowe[0]['ind']
             wartosc_war_brzeg = warunki_brzegowe[0]['wartosc']
 
-            # TODO
+            indeks_wezla_poczatkowego = indeks_wezla - 1
+
+            wzmacniacz = 10 ** 14
+
+            b[indeks_wezla_poczatkowego] = A[
+                                               indeks_wezla_poczatkowego, indeks_wezla_poczatkowego] * wzmacniacz * wartosc_war_brzeg
+            A[indeks_wezla_poczatkowego, indeks_wezla_poczatkowego] = A[
+                                                                          indeks_wezla_poczatkowego, indeks_wezla_poczatkowego] * wzmacniacz
+
+    if warunki_brzegowe[1]['typ'] == 'D':
+        indeks_wezla = warunki_brzegowe[1]['ind']
+        wartosc_war_brzeg = warunki_brzegowe[1]['wartosc']
+
+        indeks_wezla_poczatkowego = indeks_wezla - 1
+
+        wzmacniacz = 10 ** 14
+
+    b[indeks_wezla_poczatkowego] = A[
+                                       indeks_wezla_poczatkowego, indeks_wezla_poczatkowego] * wzmacniacz * wartosc_war_brzeg
+    A[indeks_wezla_poczatkowego, indeks_wezla_poczatkowego] = A[
+                                                                  indeks_wezla_poczatkowego, indeks_wezla_poczatkowego] * wzmacniacz
+
+    u = np.linalg.solve(A, b)
+
+    ff.plot_solution(wezly, elementy, warunki_brzegowe, u)
 
 # ----------------------------------------------------------------------------------------------------------------------
 # end main function

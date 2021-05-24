@@ -107,6 +107,7 @@ def base_functions(i):
         df = lambda x: 0 * x
     elif i == 1:
         f = (lambda x: -1 / 2 * x + 1 / 2, lambda x: 0.5 * x + 0.5)
+        df = (lambda x: -1 / 2 + 0 * x, lambda x: 0.5 + 0 * x)
     elif i == 2:
         f = (lambda x: 1 / 2 * x * (x - 1), lambda x: -x ** 2 + 1, lambda x: 1 / 2 * x * (x + 1))
         df = (lambda x: x - 1 / 2, lambda x: -2 * x, lambda x: x + 1 / 2)
@@ -134,3 +135,18 @@ def mem_allocation(n: int):
     A = np.zeros([n, n])
     b = np.zeros([n, 1])
     return A, b
+
+
+def plot_solution(wezly: list, elementy: list, warunki_brzegowe: dict, u: bytearray):
+    '''
+
+    :param wezly:
+    :param elementy:
+    :param warunki_brzegowe:
+    :param u:
+    :return:
+    '''
+    geometry_plot(wezly, elementy, warunki_brzegowe)
+    x = wezly[:, 1]
+    plt.plot(x, u, 'm*')
+    plt.show()
