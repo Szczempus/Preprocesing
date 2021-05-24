@@ -55,7 +55,7 @@ if __name__ == '__main__':
 
     [A, b] = ff.mem_allocation(n)
 
-    stopien_funkcji_baz = 1
+    stopien_funkcji_baz = 2
     phi, dphi = ff.base_functions(stopien_funkcji_baz)
 
     # xx = np.linspace(-1, 1, 101)
@@ -87,7 +87,6 @@ if __name__ == '__main__':
         A[np.ix_(globalne_indeksy - 1, globalne_indeksy - 1)] += M
 
         if warunki_brzegowe[0]['typ'] == 'D':
-
             indeks_wezla = warunki_brzegowe[0]['ind']
             wartosc_war_brzeg = warunki_brzegowe[0]['wartosc']
 

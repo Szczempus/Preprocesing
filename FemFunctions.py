@@ -107,11 +107,9 @@ def base_functions(i):
         df = lambda x: 0 * x
     elif i == 1:
         f = (lambda x: -1 / 2 * x + 1 / 2, lambda x: 0.5 * x + 0.5)
-        df = (lambda x: -1 / 2 + 0 * x, lambda x: 0.5 + 0 * x)
-
     elif i == 2:
-        f = (lambda x: 2 * x ** 2 - 3 * x - 1, lambda x: 4 * x - 4 * x ** 2, lambda x: 2 * x ** 2 - x)
-        df = (lambda x: 4 * x - 3, lambda x: -8 * x + 4, lambda x: 4 * x - 1)
+        f = (lambda x: 1 / 2 * x * (x - 1), lambda x: -x ** 2 + 1, lambda x: 1 / 2 * x * (x + 1))
+        df = (lambda x: x - 1 / 2, lambda x: -2 * x, lambda x: x + 1 / 2)
     else:
         raise Exception("Bład w funkcji bazowych. ")
     return f, df
