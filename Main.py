@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import FemFunctions as ff
 import scipy.integrate as spint
+import pandas as pd
 
 # ----------------------------------------------------------------------------------------------------------------------
 # private function
@@ -41,31 +42,32 @@ import scipy.integrate as spint
 # ----------------------------------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    c = 0
+    c = 1
     f = lambda x: 0
 
     poczatek = 0
-    koniec = 3
-    n = 5
+    koniec = 1
+    n = 50
     wezly, elementy = ff.geometry_definition_auto(poczatek, koniec, n)
     warunki_brzegowe = [{'ind': 1, 'typ': 'D', 'wartosc': 1},
-                        {'ind': 2, 'typ': 'D', 'wartosc': 2}]
+                        {'ind': n, 'typ': 'D', 'wartosc': 2}]
 
-    ff.geometry_plot(wezly, elementy)
+    ff.geometry_plot(wezly, elementy, warunki_brzegowe)
 
     [A, b] = ff.mem_allocation(n)
 
-    stopien_funkcji_baz = 1
+    stopien_funkcji_baz = 2
     phi, dphi = ff.base_functions(stopien_funkcji_baz)
 
-    # xx = np.linspace(-1, 1, 101)
-    # plt.plot(xx, phi[0](xx), 'r')
-    # plt.plot(xx, phi[1](xx), 'g')
-    # plt.plot(xx, phi[2](xx), 'b')
-    # plt.plot(xx, dphi[0](xx), 'c')
-    # plt.plot(xx, dphi[1](xx), 'm')
-    # plt.plot(xx, dphi[2](xx), 'y')
-    # plt.show()
+    xx = np.linspace(-1, 1, 101)
+    plt.plot(xx, phi[0](xx), 'r')
+    plt.plot(xx, phi[1](xx), 'g')
+    plt.plot(xx, phi[2](xx), 'b')
+    plt.plot(xx, dphi[0](xx), 'c')
+    plt.plot(xx, dphi[1](xx), 'm')
+    plt.plot(xx, dphi[2](xx), 'y')
+    plt.grid(True)
+    plt.show()
 
     for indeks_elementu in np.arange(0, np.shape(elementy)[0]):
         indeks_globalny_pocz = elementy[indeks_elementu, 1]
@@ -77,27 +79,30 @@ if __name__ == '__main__':
 
         J = (x_b - x_a) / 2
 
-        M = np.zeros([stopien_funkcji_baz + 1, stopien_funkcji_baz + 1])
+        M = np.zeros((stopien_funkcji_baz + 1, stopien_funkcji_baz + 1))
 
         for n in range(stopien_funkcji_baz + 1):
             for m in range(stopien_funkcji_baz + 1):
                 val = spint.quad(ff.Aij(c, dphi[n], dphi[m], phi[n], phi[m]), -1, 1)[0]
                 M[n, m] = J * val
 
-        A[np.ix_(globalne_indeksy - 1, globalne_indeksy - 1)] += M
+        if stopien_funkcji_baz == 1:
+            A[np.ix_(globalne_indeksy - 1, globalne_indeksy - 1)] += M
+        elif stopien_funkcji_baz == 2:
+            A[np.ix_(globalne_indeksy - 1, globalne_indeksy - 1)] += M[: -1, :-1]
 
-        if warunki_brzegowe[0]['typ'] == 'D':
-            indeks_wezla = warunki_brzegowe[0]['ind']
-            wartosc_war_brzeg = warunki_brzegowe[0]['wartosc']
+    if warunki_brzegowe[0]['typ'] == 'D':
+        indeks_wezla = warunki_brzegowe[0]['ind']
+        wartosc_war_brzeg = warunki_brzegowe[0]['wartosc']
 
-            indeks_wezla_poczatkowego = indeks_wezla - 1
+        indeks_wezla_poczatkowego = indeks_wezla - 1
 
-            wzmacniacz = 10 ** 14
+        wzmacniacz = 10 ** 5
 
-            b[indeks_wezla_poczatkowego] = A[
-                                               indeks_wezla_poczatkowego, indeks_wezla_poczatkowego] * wzmacniacz * wartosc_war_brzeg
-            A[indeks_wezla_poczatkowego, indeks_wezla_poczatkowego] = A[
-                                                                          indeks_wezla_poczatkowego, indeks_wezla_poczatkowego] * wzmacniacz
+        b[indeks_wezla_poczatkowego] = A[
+                                           indeks_wezla_poczatkowego, indeks_wezla_poczatkowego] * wzmacniacz * wartosc_war_brzeg
+        A[indeks_wezla_poczatkowego, indeks_wezla_poczatkowego] = A[
+                                                                      indeks_wezla_poczatkowego, indeks_wezla_poczatkowego] * wzmacniacz
 
     if warunki_brzegowe[1]['typ'] == 'D':
         indeks_wezla = warunki_brzegowe[1]['ind']
@@ -105,7 +110,7 @@ if __name__ == '__main__':
 
         indeks_wezla_poczatkowego = indeks_wezla - 1
 
-        wzmacniacz = 10 ** 14
+        wzmacniacz = 10 ** 5
 
     b[indeks_wezla_poczatkowego] = A[
                                        indeks_wezla_poczatkowego, indeks_wezla_poczatkowego] * wzmacniacz * wartosc_war_brzeg

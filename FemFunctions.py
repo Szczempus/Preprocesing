@@ -82,8 +82,13 @@ def geometry_plot(wezly: list, elementy: list, warunki_brzegowe: dict = None):
     for i in np.arange(0, numer_wezlow):
         ind = wezly[i, 0]
         x = wezly[i, 1]
+        x = round(x, 2)
+        if i == 0:
+            plt.text(x - 0.03, -0.001, str(warunki_brzegowe[0]['typ']), c='m', fontsize=15)
+        if i == numer_wezlow - 1:
+            plt.text(x + 0.03, -0.001, str(warunki_brzegowe[1]['typ']), c='m', fontsize=15)
         plt.text(x, 0.01, str(int(ind)), c='b')
-        plt.text(x, -0.01, str(x))
+        plt.text(x, -0.01, str(x), c='g')
 
     numer_elementow = np.shape(elementy)[0]
     for i in np.arange(0, numer_elementow):
@@ -93,10 +98,11 @@ def geometry_plot(wezly: list, elementy: list, warunki_brzegowe: dict = None):
         x = (wezly[wezel_pocz - 1, 1] + wezly[wezel_konc - 1, 1]) / 2
         plt.text(x, 0.01, str(i + 1), c='r')
 
+    plt.grid(True)
     plt.show()
 
 
-def base_functions(i):
+def base_functions(i: int):
     '''
 
     :param i: stopień funkcji bazowych dla elementu (do wyboru 1 lub 2)
@@ -116,13 +122,14 @@ def base_functions(i):
     return f, df
 
 
-def Aij(c, dphi1, dphi2, phi1, phi2):
+def Aij(c: int, dphi1, dphi2, phi1, phi2):
     '''
 
-    :param c: stała
-    :param phi, dphi: kolejne funkcje dphi lub phi
-    :return:
+    :param c: wspolczynnik drgan wlasnych
+    :param phi, dphi: kolejne funkcje bazowe i ich pochodne
+    :return: zwraca funkcje podcalkowa
     '''
+
     return lambda x: -dphi1(x) * dphi2(x) + c * phi1(x) * phi2(x)
 
 
@@ -148,5 +155,7 @@ def plot_solution(wezly: list, elementy: list, warunki_brzegowe: dict, u: bytear
     '''
     geometry_plot(wezly, elementy, warunki_brzegowe)
     x = wezly[:, 1]
-    plt.plot(x, u, 'm*')
+    plt.plot(x, np.zeros(wezly.shape[0]), '-o')
+    plt.plot(x, u, 'm-*')
+    plt.grid(True)
     plt.show()
